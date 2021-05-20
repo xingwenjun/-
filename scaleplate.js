@@ -16,26 +16,40 @@ const _scaleplate = function(ID,obj){
 }
 _scaleplate.prototype.init = function(w,h,data){
 	let _this = this,_canvas = this._canvas;
+	this.touchFlag = false
 	_canvas.width = w || 300;
 	_canvas.height = h || 50;
 	this.data = data || this.data;
 	this.draw();
 	_canvas.addEventListener("mousedown",function(e){
+		this.touchFlag = true
 		_this.touchstart(e.clientX);
 	})
 	_canvas.addEventListener("touchstart",function(e){
+		this.touchFlag = true
 		_this.touchstart(e.touches[0].clientX);
 	})
 	_canvas.addEventListener("mousemove",function(e){
+		if(!this.touchFlag) {
+			return false
+		}
 		_this.touchmove(e.clientX);
 	})
 	_canvas.addEventListener("touchmove",function(e){
+		if(!this.touchFlag) {
+			return false
+		}
 		_this.touchmove(e.touches[0].clientX);
 	})
 	_canvas.addEventListener("mouseup",function(e){
+		this.touchFlag = false
 		_this.touchend(e.clientX);
 	})
+	_canvas.addEventListener("mouseout",function(e){
+		this.touchFlag = false
+	})
 	_canvas.addEventListener("touchend",function(e){
+		this.touchFlag = false
 		_this.touchend(e.changedTouches[0].clientX);
 	})
 	this._dom.appendChild(_canvas);
@@ -46,12 +60,10 @@ _scaleplate.prototype.touchstart = function(e){
 }
 _scaleplate.prototype.touchmove = function(e){
 	let distance = e - this.touch1;
-	console.log(distance)
     this.data.x=distance;
     this.draw();
 }
 _scaleplate.prototype.touchend = function(){
-	console.log(this.data.num)
 	this.data.num += this.data.x;
 }
 _scaleplate.prototype.draw = function(){
@@ -84,6 +96,3 @@ _scaleplate.prototype.draw = function(){
       ctx.lineTo(160, 0);
       ctx.fill();
 }
-
-let c =new _scaleplate("scaleplate");
-c.init(300,100);
